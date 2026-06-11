@@ -1,77 +1,67 @@
-# 星眠 StarMoon 🌙
+# 星仪 Live2D 伴侣页面
 
-> AI 情感陪伴 App — 用技术给孤独一个温暖的名字
+星眠 AI 伴侣系统的 Live2D 可视化前端。当前使用 Hiyori 占位模型，后续替换为星仪专属模型。
 
-## 项目简介
+## 启动
 
-星眠 StarMoon 是一个 AI 情感陪伴应用，目标是打造一个有记忆、有性格、有情绪的 AI 伴侣。不是客服机器人，不是任务工具，而是一个真正"活着"的数字生命。
-
-当前阶段：**MVP 真机内测**
-
-## 核心架构
-
-```
-┌─────────────────┐     WebSocket      ┌──────────────────┐
-│  iOS App        │ ◄────────────────► │  Mac mini 后端   │
-│  (Capacitor)    │                    │  (FastAPI)       │
-└─────────────────┘                    └────────┬─────────┘
-                                                │
-                                     ┌──────────┴──────────┐
-                                     │                     │
-                              ┌──────▼──────┐     ┌───────▼───────┐
-                              │  LLM 对话   │     │  TTS 语音合成  │
-                              │  图片识别   │     │  唱歌生成      │
-                              │  人格系统   │     │  图片/贴纸     │
-                              └─────────────┘     └───────────────┘
+```bash
+pip install aiohttp
+python server.py
 ```
 
-### 技术栈
+打开浏览器访问: **http://127.0.0.1:19002**
 
-| 层级 | 技术 |
-|------|------|
-| 客户端 | iOS (Capacitor + SwiftUI)，Android/iPad 计划中 |
-| 后端 | Python FastAPI，WebSocket 实时通信 |
-| Agent 协作 | OpenClaw、Cursor、ChatGPT Agent |
-| 模型 | LLM 对话、TTS 语音合成、音乐生成 |
-| 网络 | Tailscale 内网穿透，本地部署 |
+## 架构
 
-## 已验证能力
+```
+浏览器 (Live2D) ←→ WebSocket :19002/ws ←→ server.py ←→ Gateway (:18888)
+                                    ↑
+                                    └── HTTP API /api/push (Gateway推送)
+```
 
-- ✅ 真机 App 安装运行（iOS）
-- ✅ Tailscale 远程连接后端
-- ✅ WebSocket 在线状态与自动重连
-- ✅ 文本聊天（流式输出）
-- ✅ TTS 语音回复
-- ✅ 歌曲播放（CellCog 生成 + WebSocket 推送）
-- ✅ 图片发送与识别
-- ✅ 表情/贴纸交互
-- ✅ 连接诊断（health check / ping-pong）
-- ✅ iOS 键盘避让与音频播放
-- ✅ 长期记忆与人格系统（本地文件）
+## API
 
-## Agent 如何参与开发
+### Gateway → Live2D 推送
 
-星眠的开发过程中，Agent（ChatGPT / OpenClaw / Cursor）深度参与：
+```bash
+# 情绪切换
+curl -X POST http://127.0.0.1:19002/api/push \
+  -H "Content-Type: application/json" \
+  -d '{"type":"emotion","emotion":"happy"}'
 
-1. **需求拆解** — 将产品想法拆成可执行的技术任务
-2. **代码审计** — 检查安全漏洞、硬编码 Key、协议一致性
-3. **生成修复指令** — 根据真机截图和日志，生成精准的代码修复
-4. **问题排查** — WebSocket 断线、Tailscale 连接、iOS ATS 配置等
-5. **迭代验证** — 修改 → 同步 → 真机测试 → 反馈 → 再修改
+# 对话气泡
+curl -X POST http://127.0.0.1:19002/api/push \
+  -H "Content-Type: application/json" \
+  -d '{"type":"speak","text":"星眠，今天想聊什么？","duration":5000}'
 
-这种 **"人 + Agent + 真机"** 的协作模式，让一个人也能高效开发完整 App。
+# 直接播放动作
+curl -X POST http://127.0.0.1:19002/api/push \
+  -H "Content-Type: application/json" \
+  -d '{"type":"motion","name":"Hiyori_m07"}'
 
-## 声明
+# 查询状态
+curl http://127.0.0.1:19002/api/status
+```
 
-⚠️ **本仓库为公开展示仓库，不包含：**
-- 生产源码
-- API Key / Token
-- 用户数据 / 聊天记录
-- 私有记忆文件（SOUL.md / MEMORY.md / 日记）
-- 真实后端地址 / Tailscale IP
+## 生产流水线
 
-所有地址使用 `<backend-host>` 占位符，所有 Key 使用环境变量读取。
+完成星仪专有模型需要走：
 
-## 许可证
+1. **立绘**: Nano Banana / 火山引擎 Seedream → 生成星仪角色立绘
+2. **拆分**: See-Through (https://modelscope.cn/studios/ljsabc/See-Through) → 自动拆23层PSD
+3. **绑骨**: Stretchy Studio → 网格+骨骼绑定
+4. **精修**: Cu → 骨骼权重精调
 
-[MIT License](LICENSE)
+产出 .moc3 + .model3.json + 纹理 → 替换 `model/Hiyori/`
+
+## 目录
+
+```
+xingmian-live2d/
+├── index.html        # 主页面
+├── server.py         # Python 桥接服务器
+├── css/style.css     # 样式
+├── js/app.js         # 前端逻辑 (PixiJS + Live2D)
+└── model/
+    └── Hiyori/       # 当前占位模型 → 替换为星仪
+```

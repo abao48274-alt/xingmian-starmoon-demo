@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星仪 · 星眠 AI 伴侣</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 背景星空 -->
+  <div class="stars-bg"></div>
+
+  <!-- Live2D 画布 -->
+  <canvas id="live2d-canvas"></canvas>
+
+  <!-- 状态指示器 -->
+  <div class="status-bar">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">连接中...</span>
+    <span class="emotion-tag" id="emotion-tag"></span>
+  </div>
+
+  <!-- 底部控制 -->
+  <div class="controls">
+    <button class="ctrl-btn" data-motion="idle">待机</button>
+    <button class="ctrl-btn" data-motion="happy">开心</button>
+    <button class="ctrl-btn" data-motion="surprised">惊讶</button>
+    <button class="ctrl-btn" data-motion="sad">难过</button>
+    <button class="ctrl-btn" data-motion="angry">生气</button>
+    <button class="ctrl-btn" data-motion="blush">害羞</button>
+  </div>
+
+  <!-- 说话气泡 -->
+  <div class="speech-bubble" id="speech-bubble"></div>
+
+  <!-- Core Libs -->
+  <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.3.3/dist/pixi.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.5.0/dist/index.min.js"></script>
+
+  <!-- App -->
+  <script src="js/app.js"></script>
+</body>
+</html>
